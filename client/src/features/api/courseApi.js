@@ -18,72 +18,27 @@ export const courseApi = createApi({
       }),
       invalidatesTags: ["Refetch_Creator_Course"],
     }),
-    /*getSearchCourse:builder.query({
-      query: ({searchQuery, categories, sortByPrice}) => {
-        // Build qiery string
-        let queryString = `/search?query=${encodeURIComponent(searchQuery)}`
+    getSearchCourse: builder.query({
+      query: ({ searchQuery, categories, sortByPrice }) => {
+        const params = new URLSearchParams();
 
-        // append cateogry 
-        if(categories && categories.length > 0) {
-          const categoriesString = categories.map(encodeURIComponent).join(",");
-          queryString += `&categories=${categoriesString}`; 
-          console.log(categoriesString);
+        if (searchQuery) params.append("query", searchQuery);
+        
+        if (categories && categories.length > 0) {
+          params.append("category", categories[0]); // Use first category as filter
         }
 
-        // Append sortByPrice is available
-        if(sortByPrice){
-          queryString += `&sortByPrice=${encodeURIComponent(sortByPrice)}`; 
-        }
+        // Map sortByPrice to our AI search sortBy parameter
+        if (sortByPrice === "low") params.append("sortBy", "price_low");
+        else if (sortByPrice === "high") params.append("sortBy", "price_high");
+        else if (sortByPrice) params.append("sortBy", sortByPrice);
 
         return {
-          url:queryString,
-          method:"GET", 
-        }
-      }
-    }),*/
-    /*getSearchCourse: builder.query({
-  query: ({ searchQuery, categories, sortByPrice }) => {
-    const params = new URLSearchParams();
-
-    if (searchQuery) params.append("query", searchQuery);
-
-    // This ensures multiple categories are passed as an array
-    if (categories && categories.length > 0) {
-      categories.forEach((cat) => params.append("categories", cat));
-      console.log(categories);
-    }
-
-    if (sortByPrice) params.append("sortByPrice", sortByPrice);
-
-    return {
-      url: `/search?${params.toString()}`,
-      method: "GET",
-    };
-  },
-}),*/
-
-  getSearchCourse: builder.query({
-  query: ({ searchQuery, categories, sortByPrice }) => {
-    const params = new URLSearchParams();
-
-    if (searchQuery) params.append("query", searchQuery);
-
-    if (categories && categories.length > 0) {
-      categories.forEach((cat) => {
-        params.append("categories", cat); // This will generate multiple ?categories=...
-        //console.log(categories);
-      });
-    }
-
-    if (sortByPrice) params.append("sortByPrice", sortByPrice);
-
-    return {
-      url: `/search?${params.toString()}`,
-      method: "GET",
-    };
-  },
-}),
-
+          url: `http://localhost:8080/api/v1/search/courses?${params.toString()}`,
+          method: "GET",
+        };
+      },
+    }),
 
     getPublishedCourse: builder.query({
       query: () => ({

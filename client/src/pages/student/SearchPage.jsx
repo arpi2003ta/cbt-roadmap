@@ -13,13 +13,17 @@ const SearchPage = () => {
   const [selectedCategories, setSelectedCatgories] = useState([]);
   const [sortByPrice, setSortByPrice] = useState("");
 
-  const { data, isLoading } = useGetSearchCourseQuery({
+  const { data, isLoading, error } = useGetSearchCourseQuery({
     searchQuery:query,
     categories:selectedCategories,
     sortByPrice
   });
 
-  const isEmpty = !isLoading && data?.courses.length === 0;
+  // Handle the AI search response format
+  const courses = data?.data?.courses || [];
+  const totalResults = data?.data?.totalResults || 0;
+  const insights = data?.data?.insights || {};
+  const isEmpty = !isLoading && courses.length === 0;
 
   const handleFilterChange = (categories, price) => {
     setSelectedCatgories(categories);
@@ -28,11 +32,19 @@ const SearchPage = () => {
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8">
       <div className="my-6">
-        <h1 className="font-bold text-xl md:text-2xl">result for "{query}"</h1>
+        <h1 className="font-bold text-xl md:text-2xl">
+          {totalResults > 0 ? `Found ${totalResults} results for "${query}"` : `Results for "${query}"`}
+        </h1>
         <p>
-          Showing results for {""}
-          <span className="text-blue-800 font-bold italic">{query}</span>
+          {insights.summary ? insights.summary : (
+            <>Showing results for <span className="text-blue-800 font-bold italic">{query}</span></>
+          )}
         </p>
+        {insights.averagePrice && (
+          <p className="text-sm text-gray-600 mt-1">
+            Average price: ₹{insights.averagePrice} • Available levels: {insights.availableLevels?.join(", ")}
+          </p>
+        )}
       </div>
       <div className="flex flex-col md:flex-row gap-10">
         <Filter handleFilterChange={handleFilterChange}/>
@@ -41,10 +53,14 @@ const SearchPage = () => {
             Array.from({ length: 3 }).map((_, idx) => (
               <CourseSkeleton key={idx} />
             ))
+          ) : error ? (
+            <div className="text-center text-red-600 p-4">
+              <p>Error loading search results. Please try again.</p>
+            </div>
           ) : isEmpty ? (
             <CourseNotFound />
           ) : (
-            data?.courses?.map((course) => <SearchResult key={course._id} course={course}/>)
+            courses?.map((course) => <SearchResult key={course._id} course={course}/>)
           )}
         </div>
       </div>

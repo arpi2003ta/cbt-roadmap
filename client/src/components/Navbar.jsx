@@ -27,6 +27,7 @@ import { useLogoutUserMutation } from "@/features/api/authApi";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 
+
 const Navbar = () => {
   const { user } = useSelector((store) => store.auth);
   const [logoutUser, { data, isSuccess }] = useLogoutUserMutation();
@@ -92,6 +93,7 @@ const Navbar = () => {
             </h1>
           {/*</Link>*/}
         </div>
+     
         {/* User icons and dark mode icon  */}
         <div className="flex items-center gap-8">
           {user ? (
@@ -223,6 +225,7 @@ const MobileNavbar = ({user ,logoutHandler }) => {
           )}
           <Link to="/profile">Edit Profile</Link>
           <Link to="ai-examiner">AI Examiner</Link>
+          <Link to="/course/search">AI Search</Link>
           {/*<p>Log out</p>*/}
           <button
             onClick={logoutHandler}

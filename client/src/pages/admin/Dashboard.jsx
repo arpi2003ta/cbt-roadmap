@@ -11,7 +11,7 @@ const Dashboard = () => {
   if(isError) return <h1 className="text-red-500">Failed to get purchased course</h1>
 
   //
-  const {purchasedCourse} = data || [];
+  /*const {purchasedCourse} = data || [];
 
   const courseData = purchasedCourse.map((course)=> ({
     name:course.courseId.courseTitle,
@@ -20,7 +20,25 @@ const Dashboard = () => {
 
   const totalRevenue = purchasedCourse.reduce((acc,element) => acc+(element.amount || 0), 0);
 
-  const totalSales = purchasedCourse.length;
+  const totalSales = purchasedCourse.length;*/
+
+  const purchasedCourse = data?.purchasedCourse || [];
+
+const courseData = purchasedCourse
+  .filter(course => course?.courseId) // filter out null or undefined courseId
+  .map(course => ({
+    name: course.courseId?.courseTitle || "Untitled",
+    price: course.courseId?.coursePrice || 0
+  }));
+
+const totalRevenue = purchasedCourse.reduce(
+  (acc, element) => acc + (element?.amount || 0),
+  0
+);
+
+const totalSales = purchasedCourse.length;
+
+  
   return (
     <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
       <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -77,3 +95,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

@@ -22,7 +22,7 @@ function About() {
             About Us <TfiLayoutLineSolid className="w-[40px] h-[40px]" />
         </div>
         <div className="md:text-[40px] text-[30px] font-semibold leading-tight">
-          We Are Maximize Your Learning Growth
+          We Maximize Your Learning Growth
         </div>
         <div className="text-[14px] mt-[10px] leading-relaxed">
           We provide a modern Learning Management System to simplify online education,

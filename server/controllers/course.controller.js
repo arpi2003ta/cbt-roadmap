@@ -420,3 +420,42 @@ export const togglePublishCourse = async (req,res) => {
         })
     }
 }
+
+export const postReview = async (req,res)=>{
+    try{
+        const {comment, rating}=req.body;
+        const {courseId}=req.params;
+
+        if(!comment){
+            return res.status(400).json({message:"enter comments to post"})
+        }
+        const userId = req.user._id;
+        const course = await Course.findById(courseId);
+        if(!course){
+            return res.status(404).json({message:"course not found"})
+        }
+        const review = {
+            rating,
+            user:userId,
+            comment:comment
+        }
+        course.review.push(review);
+        await course.save();
+
+        return res.status(200).json({success:true,message:"Review posted"})
+    }catch(err){
+        return res.status(400).json({message:err.message});
+    }
+}
+
+export const getReview = async (req,res)=>{
+    try{
+        const {courseId}=req.params;
+        const course =await Course.findById(courseId).select("review").populate('review.user','name');
+        
+        return res.status(200).json({success:true, reviews:course.review});
+        
+    }catch(err){
+        return res.status(400).json({message:err.message})
+    }
+}

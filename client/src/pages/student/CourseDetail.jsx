@@ -1,4 +1,5 @@
 import BuyCourseButton from "@/components/BuyCourseButton";
+import Review from "@/components/Review";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -104,6 +105,7 @@ const CourseDetail = () => {
           </Card>
         </div>
       </div>
+      <Review/>
     </div>
   );
 };

@@ -56,6 +56,7 @@ const VoiceNavigation = () => {
       navigate_profile: /\b(profile|my profile|account|my account|user profile|settings|preferences)\b/,
       navigate_search: /\b(search|search page|course search|search courses|find courses|search portal|explore)\b/,
       navigate_ai_examiner: /\b(ai examiner|examiner|exam|test|ai exam|examination|assessment)\b/,
+      navigate_ai_roadmap: /\b(ai roadmap|personalised roadmap|schedule|timetable|road map|planner)\b/,
       navigate_colleges: /\b(colleges|college|institutions|universities|schools|education)\b/,
       navigate_cbt_practice: /\b(cbt|cvt|practice|test|quiz|mcq)\b/,
       
@@ -132,6 +133,11 @@ const VoiceNavigation = () => {
         case 'navigate_ai_examiner':
           toast.success("🤖 Opening AI Examiner");
           navigate("/ai-examiner");
+          return true;
+        
+          case 'navigate_ai_roadmap':
+          toast.success("🤖 Opening AI Roadmap Planner");
+          navigate("/ai-roadmap");
           return true;
        
           case 'navigate_cbt_practice':

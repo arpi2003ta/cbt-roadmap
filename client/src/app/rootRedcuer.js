@@ -7,6 +7,8 @@ import { courseProgressApi } from "@/features/api/courseProgressApi";
 import { roadmapApi } from "@/features/api/roadmapApi";
 import { searchApi } from "@/features/api/searchApi";
 
+import { voiceAssistantApi } from "@/features/api/voiceAssistantApi";
+
 const rootReducer = combineReducers({
     [authApi.reducerPath]: authApi.reducer,
     [courseApi.reducerPath]: courseApi.reducer,
@@ -14,6 +16,8 @@ const rootReducer = combineReducers({
     [courseProgressApi.reducerPath]: courseProgressApi.reducer,
     [roadmapApi.reducerPath]: roadmapApi.reducer,
     [searchApi.reducerPath]: searchApi.reducer,
+    
+    [voiceAssistantApi.reducerPath]:voiceAssistantApi.reducer,
     auth: authReducer,
 });
 

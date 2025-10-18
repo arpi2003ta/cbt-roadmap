@@ -32,6 +32,8 @@ import StudentExamPage from "./pages/student/StudentExamPage";
 import InstructorExamPage from "./pages/admin/InstructorExamPage";
 import ResultsPage from "./pages/student/ResultsPage";
 import InstructorAIExaminer from "./pages/admin/InstructorAIExaminer";
+import { BrowserCompatibilityProvider } from "./components/BrowserCompatibility";
+import ErrorBoundary, { usePerformanceMonitoring, useNetworkStatus } from "./components/ErrorBoundary";
 
 const appRouter = createBrowserRouter([
   {
@@ -220,9 +222,13 @@ const appRouter = createBrowserRouter([
 function App() {
   return (
     <main>
+      <ErrorBoundary>
+        <BrowserCompatibilityProvider>
       <ThemeProvider>
         <RouterProvider router={appRouter} future={{ v7_startTransition: true }} />
       </ThemeProvider>
+      </BrowserCompatibilityProvider>
+    </ErrorBoundary>
     </main>
   );
 }

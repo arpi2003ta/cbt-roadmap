@@ -57,7 +57,7 @@ const VoiceNavigation = () => {
       navigate_search: /\b(search|search page|course search|search courses|find courses|search portal|explore)\b/,
       navigate_ai_examiner: /\b(ai examiner|examiner|exam|test|ai exam|examination|assessment)\b/,
       navigate_colleges: /\b(colleges|college|institutions|universities|schools|education)\b/,
-      navigate_cbt_practice: /\b(cbt|cvt|practice|test|quiz|MCQ)\b/,
+      navigate_cbt_practice: /\b(cbt|cvt|practice|test|quiz|mcq)\b/,
       
       // Admin navigation
       admin_dashboard: /\b(admin|admin dashboard|control panel|management|admin panel|dashboard)\b/,

@@ -63,7 +63,9 @@ const VoiceNavigation = () => {
       // Admin navigation
       admin_dashboard: /\b(admin|admin dashboard|control panel|management|admin panel|dashboard)\b/,
       admin_create_course: /\b(create course|add course|new course|make course|course creation|build course|add course)\b/,
-      admin_manage_courses: /\b(manage courses|my courses|edit courses|course management|instructor courses|course admin)\b/,
+      admin_manage_courses: /\b(manage course|my course|edit course|course management|instructor course|course admin)\b/,
+      admin_cbt_exam: /\b(manage|cbtexam|practice|test|quiz|mcq)\b/,
+      admin_ai_examiner: /\b(manage|ai|examiner|test|quiz|mcq)\b/,
       
       // Advanced search patterns - mobile friendly
       voice_search: /\b(search for|find|look for|show me|get me|i want|i need)\s+(.+)/,
@@ -109,46 +111,79 @@ const VoiceNavigation = () => {
           toast.success("🏠 Going to home page");
           navigate("/");
           return true;
-
-        case 'navigate_courses':
-          toast.success("📚 Opening courses");
-          navigate("/");
-          return true;
-
-        case 'navigate_learning':
-          toast.success("🎓 Opening learning dashboard");
-          navigate("/my-learning");
-          return true;
-
+        
         case 'navigate_profile':
           toast.success("👤 Opening profile");
           navigate("/profile");
           return true;
 
-        case 'navigate_search':
-          toast.success("🔍 Opening search");
-          navigate("/course/search");
-          return true;
+        case 'navigate_courses':
+          if (user?.role === 'student') {
+            toast.success("📚 Opening courses");
+            navigate("/course/search");
+            return true;
+          } else {
+            toast.error("🚫 Access denied: student privileges required");
+            return true;
+          }
+          
+
+        case 'navigate_learning':
+          if (user?.role === 'student') {
+            toast.success("🎓 Opening learning dashboard");
+            navigate("/my-learning");
+            return true;
+          } else {
+            toast.error("🚫 Access denied: student privileges required");
+            return true;
+          }
+          
+
+        
 
         case 'navigate_ai_examiner':
-          toast.success("🤖 Opening AI Examiner");
-          navigate("/ai-examiner");
-          return true;
+          if (user?.role === 'student') {
+            toast.success("🤖 Opening AI Examiner");
+            navigate("/ai-examiner");
+            return true;
+          } else {
+            toast.error("🚫 Access denied: student privileges required");
+            return true;
+          }
+          
         
           case 'navigate_ai_roadmap':
-          toast.success("🤖 Opening AI Roadmap Planner");
-          navigate("/ai-roadmap");
-          return true;
+            if (user?.role === 'student') {
+            toast.success("🤖 Opening AI Roadmap Planner");
+            navigate("/ai-roadmap");
+            return true;
+          } else {
+            toast.error("🚫 Access denied: student privileges required");
+            return true;
+          }
+          
        
           case 'navigate_cbt_practice':
+            if (user?.role === 'student') {
             toast.success("🤖 Opening CBT Practice");
             navigate("/cbt");
             return true;
+          } else {
+            toast.error("🚫 Access denied: student privileges required");
+            return true;
+          }
+            
           
         case 'navigate_colleges':
-          toast.success("🏫 Opening colleges");
-          navigate("/ai-examiner/colleges");
-          return true;
+          if (user?.role === 'student') {
+            toast.success("🏫 Opening colleges");
+            navigate("/ai-examiner/colleges");
+            return true;
+          } else {
+            toast.error("🚫 Access denied: student privileges required");
+            return true;
+          }
+          
 
         // Admin Commands
         case 'admin_dashboard':
@@ -180,7 +215,27 @@ const VoiceNavigation = () => {
             toast.error("🚫 Access denied: Instructor privileges required");
             return true;
           }
+          
+          case 'admin_cbt_exam':
+          if (user?.role === 'instructor') {
+            toast.success("⚡ Opening cbt exam");
+            navigate("/admin/manage-exam");
+            return true;
+          } else {
+            toast.error("🚫 Access denied: Admin privileges required");
+            return true;
+          }
+          case 'admin_ai_examiner':
+          if (user?.role === 'instructor') {
+            toast.success("⚡ Opening ai examiner management");
+            navigate("/ai-examiner/instructor");
+            return true;
+          } else {
+            toast.error("🚫 Access denied: Admin privileges required");
+            return true;
+          }
 
+          
         // Advanced Search Commands
         case 'voice_search':
           const searchQuery = match[2]?.trim();

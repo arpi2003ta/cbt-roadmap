@@ -441,6 +441,7 @@ export const postReview = async (req,res)=>{
         }
         course.review.push(review);
         await course.save();
+        // console.log(course.review[course.review.length - 1]);
 
         return res.status(200).json({success:true,message:"Review posted"})
     }catch(err){
@@ -457,5 +458,82 @@ export const getReview = async (req,res)=>{
         
     }catch(err){
         return res.status(400).json({message:err.message})
+    }
+}
+
+export const updateReview = async (req, res)=>{
+    try{
+        const {courseId, reviewId}=req.params;
+        const { rating, comment, }=req.body;
+        const userId = req.user._id;
+
+        if(!reviewId ||(!rating && !comment)){
+            return res.status(400).json({
+                message:"Rating or comment are missing"
+            });
+        }
+
+        const course = await Course.findById(courseId);
+        if(!course){
+            return res.status(404).json({message:"course not found"});
+        }
+
+        const review = course.review.id(reviewId);
+        if(!review){
+            return res.status(404).json({message:"review not found"});
+        }
+
+        if(review.user.toString()!=userId){
+            return res.status(400).json({message:"Not Authorized to edit this review"});
+        }
+
+        if(rating !=undefined){
+            review.rating=rating;
+        }
+        if(comment !=undefined){
+            review.comment=comment;
+        }
+        review.updatedAt=Date.now();
+
+        await course.save();
+
+        res.status(200).json({
+            message:"Review Updated Successfully",
+            course
+        });
+
+    }catch(err){
+        return res.status(400).json({message:err.message})
+    }
+}
+
+export const deleteReview = async (req, res)=>{
+    try{
+        const {courseId, reviewId}=req.params;
+        const userId=req.user._id;
+
+        const course = await Course.findById(courseId);
+        if(!course){
+            return res.status(404).json("course not found");
+        }
+
+        const review = course.review.id(reviewId);
+        if(!review){
+            return res.status(404).json({message:"review not found"});
+        }
+        if(review.user.toString()!=userId){
+            return res.status(400).json({message:"Not Authorized to delete this review"})
+        }
+        review.deleteOne();
+
+        await course.save();
+
+        res.status(200).json({
+            message:"review Deleted Successfully",
+            course
+        })
+
+    }catch(err){
+        return res.status(400).json({message: err.message});
     }
 }

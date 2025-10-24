@@ -70,7 +70,7 @@ const VoiceNavigation = () => {
       // Advanced search patterns - mobile friendly
       voice_search: /\b(search for|find|look for|show me|get me|i want|i need)\s+(.+)/,
       voice_search_category: /\b(search|find|show|get)\s+(javascript|python|react|node|angular|vue|java|php|swift|kotlin|flutter|dart|go|rust|ruby|c\+\+|c#|typescript|html|css|bootstrap|tailwind|mongodb|mysql|postgresql|firebase|aws|azure|docker|kubernetes|web development|mobile development|app development|frontend|backend|fullstack|full stack|ui|ux|design|ai|ml|machine learning|data science|devops|cyber security|blockchain|game development|mobile app|web app|api|rest|graphql)\s*(courses?|tutorials?|training|lessons?|classes?)?/i,
-      voice_search_level: /\b(search|find|show|get)\s+(beginner|basic|starter|entry level|intermediate|medium|advanced|expert|professional|senior)\s+(courses?|tutorials?|training|lessons?)/i,
+      voice_search_level: /\b(search|find|show|get)\s+(beginner|basic|starter|entry level|intermediate|medium|advanced|expert|professional|senior)\s*(courses?|tutorials?|training|lessons?)/i,
       voice_search_price: /\b(search|find|show|get)\s+(free|no cost|zero cost|gratis|cheap|affordable|inexpensive|expensive|premium|paid|under \d+|above \d+|less than \d+|more than \d+)\s*(courses?|tutorials?|training)?/i,
       
       // Quick actions - mobile optimized
@@ -265,31 +265,61 @@ const VoiceNavigation = () => {
           break;
 
         case 'voice_search_price':
-          const priceType = match[2]?.trim();
-          if (priceType) {
-            let priceQuery = '';
-            let sortBy = '';
+          const priceType = match[2]?.trim();
+          if (priceType) {
+            let priceQuery = '';
+            let sortBy = '';
+            let filter = ''; // To hold new price filters like price_lte=50
+
+            // Define keyword sets
+            const freeTerms = ['free', 'no cost', 'zero cost', 'gratis'];
+            const cheapTerms = ['cheap', 'affordable', 'inexpensive'];
+            const premiumTerms = ['expensive', 'premium', 'paid'];
+
+            // Check for numeric matches
+            const underMatch = priceType.match(/under (\d+)|less than (\d+)/i);
+            const aboveMatch = priceType.match(/above (\d+)|more than (\d+)/i);
+
+            // Use cleaner .includes() check
+            if (freeTerms.includes(priceType)) {
+              priceQuery = 'free courses';
+              sortBy = '&sortBy=price_low';
+              filter = '&price=0'; // Assuming your API supports this
+              toast.success("💰 Finding free courses");
+            } else if (cheapTerms.includes(priceType)) {
+              priceQuery = 'affordable courses';
+              sortBy = '&sortBy=price_low';
+              toast.success("💸 Finding affordable courses");
+            } else if (premiumTerms.includes(priceType)) {
+              priceQuery = 'premium courses';
+              sortBy = '&sortBy=price_high';
+              toast.success("💎 Finding premium courses");
             
-            if (['free', 'no cost', 'zero cost', 'gratis'].some(term => priceType.includes(term))) {
-              priceQuery = 'free courses';
+            // --- ADDED LOGIC ---
+            // Handle "under 50" or "less than 50"
+            } else if (underMatch) {
+              const price = underMatch[1] || underMatch[2]; // Get the captured number
+              priceQuery = `courses under ${price}`;
+              filter = `&price_lte=${price}`; // 'lte' = less than or equal
               sortBy = '&sortBy=price_low';
-              toast.success("💰 Finding free courses");
-            } else if (['cheap', 'affordable', 'inexpensive'].some(term => priceType.includes(term))) {
-              priceQuery = 'affordable courses';
-              sortBy = '&sortBy=price_low';
-              toast.success("💸 Finding affordable courses");
-            } else if (['expensive', 'premium', 'paid'].some(term => priceType.includes(term))) {
-              priceQuery = 'premium courses';
-              sortBy = '&sortBy=price_high';
-              toast.success("💎 Finding premium courses");
-            }
+              toast.success(`💸 Finding courses under ${price}`);
             
-            if (priceQuery) {
-              navigate(`/course/search?query=${encodeURIComponent(priceQuery)}${sortBy}`);
-              return true;
+            // Handle "above 100" or "more than 100"
+            } else if (aboveMatch) {
+              const price = aboveMatch[1] || aboveMatch[2]; // Get the captured number
+              priceQuery = `courses above ${price}`;
+              filter = `&price_gte=${price}`; // 'gte' = greater than or equal
+              sortBy = '&sortBy=price_low';
+              toast.success(`💸 Finding courses above ${price}`);
             }
-          }
-          break;
+
+            if (priceQuery) { // This check now works for all cases
+              // Append the new filter parameter
+              navigate(`/course/search?query=${encodeURIComponent(priceQuery)}${sortBy}${filter}`);
+              return true;
+          _}
+          }
+          break;
 
         // Quick Actions
         case 'quick_popular':

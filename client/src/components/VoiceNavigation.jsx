@@ -69,7 +69,6 @@ const VoiceNavigation = () => {
       
       // Advanced search patterns - mobile friendly
       voice_search: /\b(search for|find|look for|show me|get me|i want|i need)\s+(.+)/,
-      voice_search_category: /\b(search|find|show|get)\s+(javascript|python|react|node|angular|vue|java|php|swift|kotlin|flutter|dart|go|rust|ruby|c\+\+|c#|typescript|html|css|bootstrap|tailwind|mongodb|mysql|postgresql|firebase|aws|azure|docker|kubernetes|web development|mobile development|app development|frontend|backend|fullstack|full stack|ui|ux|design|ai|ml|machine learning|data science|devops|cyber security|blockchain|game development|mobile app|web app|api|rest|graphql)\s*(courses?|tutorials?|training|lessons?|classes?)?/i,
       voice_search_level: /\b(search|find|show|get)\s+(beginner|basic|starter|entry level|intermediate|medium|advanced|expert|professional|senior)\s*(courses?|tutorials?|training|lessons?)/i,
       voice_search_price: /\b(search|find|show|get)\s+(free|no cost|zero cost|gratis|cheap|affordable|inexpensive|expensive|premium|paid|under \d+|above \d+|less than \d+|more than \d+)\s*(courses?|tutorials?|training)?/i,
       
@@ -246,14 +245,7 @@ const VoiceNavigation = () => {
           }
           break;
 
-        case 'voice_search_category':
-          const category = match[2]?.trim();
-          if (category) {
-            toast.success(`🏷️ Searching ${category} courses`);
-            navigate(`/course/search?query=${encodeURIComponent(category)}&category=${encodeURIComponent(category)}`);
-            return true;
-          }
-          break;
+      
 
         case 'voice_search_level':
           const level = match[2]?.trim();

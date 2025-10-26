@@ -65,21 +65,13 @@ const VoiceNavigation = () => {
       admin_create_course: /\b(create course|add course|new course|make course|course creation|build course|add course)\b/,
       admin_manage_courses: /\b(manage course|my course|edit course|course management|instructor course|course admin)\b/,
       admin_cbt_exam: /\b(manage|cbtexam|practice|test|quiz|mcq)\b/,
-      admin_ai_examiner: /\b(manage|ai|examiner|test|quiz|mcq)\b/,
+      admin_ai_examiner: /\b(admin ai|ai|examiner|test|quiz|mcq)\b/,
       
       // Advanced search patterns - mobile friendly
       voice_search: /\b(search for|find|look for|show me|get me|i want|i need)\s+(.+)/,
-      voice_search_level: /\b(search|find|show|get)\s+(beginner|basic|starter|entry level|intermediate|medium|advanced|expert|professional|senior)\s*(courses?|tutorials?|training|lessons?)/i,
-      voice_search_price: /\b(search|find|show|get)\s+(free|no cost|zero cost|gratis|cheap|affordable|inexpensive|expensive|premium|paid|under \d+|above \d+|less than \d+|more than \d+)\s*(courses?|tutorials?|training)?/i,
-      
-      // Quick actions - mobile optimized
-      quick_popular: /\b(popular|trending|most popular|best|top rated|highly rated|recommended|hot|viral)\s*(courses?|tutorials?)?/i,
-      quick_recent: /\b(recent|latest|new|newest|fresh|updated|just added|newly added)\s*(courses?|tutorials?)?/i,
-      quick_free: /\b(free|no cost|zero cost|gratis|complimentary|open)\s*(courses?|tutorials?|training)?/i,
       
       // Mobile-specific commands
       mobile_back: /\b(back|go back|previous|return|navigate back)\b/,
-      mobile_menu: /\b(menu|navigation|nav|show menu|open menu|hamburger)\b/,
       mobile_close: /\b(close|hide|minimize|dismiss|cancel)\b/,
       
       // System commands
@@ -245,89 +237,9 @@ const VoiceNavigation = () => {
           }
           break;
 
-      
+       
 
-        case 'voice_search_level':
-          const level = match[2]?.trim();
-          if (level) {
-            toast.success(`📊 Searching ${level} courses`);
-            navigate(`/course/search?query=${encodeURIComponent(level + ' courses')}`);
-            return true;
-          }
-          break;
-
-        case 'voice_search_price':
-          const priceType = match[2]?.trim();
-          if (priceType) {
-            let priceQuery = '';
-            let sortBy = '';
-            let filter = ''; // To hold new price filters like price_lte=50
-
-            // Define keyword sets
-            const freeTerms = ['free', 'no cost', 'zero cost', 'gratis'];
-            const cheapTerms = ['cheap', 'affordable', 'inexpensive'];
-            const premiumTerms = ['expensive', 'premium', 'paid'];
-
-            // Check for numeric matches
-            const underMatch = priceType.match(/under (\d+)|less than (\d+)/i);
-            const aboveMatch = priceType.match(/above (\d+)|more than (\d+)/i);
-
-            // Use cleaner .includes() check
-            if (freeTerms.includes(priceType)) {
-              priceQuery = 'free courses';
-              sortBy = '&sortBy=price_low';
-              filter = '&price=0'; // Assuming your API supports this
-              toast.success("💰 Finding free courses");
-            } else if (cheapTerms.includes(priceType)) {
-              priceQuery = 'affordable courses';
-              sortBy = '&sortBy=price_low';
-              toast.success("💸 Finding affordable courses");
-            } else if (premiumTerms.includes(priceType)) {
-              priceQuery = 'premium courses';
-              sortBy = '&sortBy=price_high';
-              toast.success("💎 Finding premium courses");
-            
-            // --- ADDED LOGIC ---
-            // Handle "under 50" or "less than 50"
-            } else if (underMatch) {
-              const price = underMatch[1] || underMatch[2]; // Get the captured number
-              priceQuery = `courses under ${price}`;
-              filter = `&price_lte=${price}`; // 'lte' = less than or equal
-              sortBy = '&sortBy=price_low';
-              toast.success(`💸 Finding courses under ${price}`);
-            
-            // Handle "above 100" or "more than 100"
-            } else if (aboveMatch) {
-              const price = aboveMatch[1] || aboveMatch[2]; // Get the captured number
-              priceQuery = `courses above ${price}`;
-              filter = `&price_gte=${price}`; // 'gte' = greater than or equal
-              sortBy = '&sortBy=price_low';
-              toast.success(`💸 Finding courses above ${price}`);
-            }
-
-            if (priceQuery) { // This check now works for all cases
-              // Append the new filter parameter
-              navigate(`/course/search?query=${encodeURIComponent(priceQuery)}${sortBy}${filter}`);
-              return true;
-          _}
-          }
-          break;
-
-        // Quick Actions
-        case 'quick_popular':
-          toast.success("🔥 Finding popular courses");
-          navigate("/course/search?query=popular&sortBy=popularity");
-          return true;
-
-        case 'quick_recent':
-          toast.success("🆕 Finding recent courses");
-          navigate("/course/search?query=latest&sortBy=newest");
-          return true;
-
-        case 'quick_free':
-          toast.success("🆓 Finding free courses");
-          navigate("/course/search?query=free courses&sortBy=price_low");
-          return true;
+       
 
         // Mobile-specific commands
         case 'mobile_back':
@@ -335,10 +247,7 @@ const VoiceNavigation = () => {
           window.history.back();
           return true;
 
-        case 'mobile_menu':
-          toast.info("📱 Opening navigation menu");
-          // Trigger mobile menu (you can dispatch an action here)
-          return true;
+       
 
         case 'mobile_close':
           toast.info("❌ Closing");
@@ -371,15 +280,13 @@ const VoiceNavigation = () => {
             ? [
                 "🏠 Navigation: home, courses, my learning, profile, search",
                 "⚡ Admin: admin dashboard, create course, manage courses", 
-                "🔍 Search: search for [topic], find [category] courses",
-                "🔥 Quick: popular courses, recent courses, free courses",
+                "🔍 Search: search for [topic]",
                 "🛠️ System: logout, help, mute, unmute" + (isMobile ? ", back, menu" : "")
               ]
             : [
                 "🏠 Navigation: home, courses, my learning, profile, search",
                 "🤖 AI: ai examiner, colleges",
-                "🔍 Search: search for [topic], find [category] courses", 
-                "🔥 Quick: popular courses, recent courses, free courses",
+                "🔍 Search: search for [topic]", 
                 "🛠️ System: logout, help, mute, unmute" + (isMobile ? ", back, menu" : "")
               ];
           

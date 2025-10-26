@@ -1,1 +1,1 @@
-omr part, voice navigation -> left
+omr part, prediction , explore course -> left

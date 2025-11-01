@@ -6,7 +6,7 @@ export const aiSearchCourses = async (req, res) => {
     try {
         const { query, category, level, minPrice, maxPrice, sortBy = 'relevance' } = req.query;
 
-        if (!query || query.trim().length < 2) {
+        if (!query || query.trim().length < 1) {
             return res.status(400).json({
                 success: false,
                 message: "Search query must be at least 2 characters long"
